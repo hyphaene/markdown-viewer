@@ -136,9 +136,9 @@ pub async fn download_update(download_url: String) -> Result<String, String> {
 
 #[tauri::command]
 pub async fn install_update(dmg_path: String, app_handle: AppHandle) -> Result<(), String> {
-    let app_name = "Markdown Viewer";
-    let volume_name = app_name;
-    let install_path = format!("/Applications/{}.app", app_name);
+    let volume_name = "markdown-viewer";
+    let app_bundle_name = "markdown-viewer.app";
+    let install_path = "/Applications/markdown-viewer.app";
 
     let script = format!(
         r#"#!/bin/bash
@@ -146,30 +146,41 @@ set -e
 
 DMG_PATH="{dmg_path}"
 VOLUME_NAME="{volume_name}"
-APP_NAME="{app_name}"
+APP_BUNDLE="{app_bundle_name}"
 INSTALL_PATH="{install_path}"
 
 sleep 1
 
-if [ -d "/Volumes/$VOLUME_NAME" ]; then
-    hdiutil detach "/Volumes/$VOLUME_NAME" -quiet 2>/dev/null || true
+# Detach ALL existing markdown-viewer volumes (including "markdown-viewer 2", etc.)
+for vol in /Volumes/markdown-viewer*; do
+    [ -d "$vol" ] && hdiutil detach "$vol" -quiet 2>/dev/null || true
+done
+
+# Mount the DMG and capture the mount point
+MOUNT_OUTPUT=$(hdiutil attach "$DMG_PATH" -nobrowse 2>&1)
+MOUNT_POINT=$(echo "$MOUNT_OUTPUT" | grep -o '/Volumes/[^"]*' | head -1)
+
+if [ -z "$MOUNT_POINT" ] || [ ! -d "$MOUNT_POINT" ]; then
+    echo "Failed to mount DMG"
+    exit 1
 fi
 
-hdiutil attach "$DMG_PATH" -nobrowse -quiet
+# Copy with admin privileges and clear quarantine
+osascript -e 'do shell script "rm -rf \"'"$INSTALL_PATH"'\" && cp -R \"'"$MOUNT_POINT"'/'"$APP_BUNDLE"'\" \"/Applications/\" && xattr -cr \"'"$INSTALL_PATH"'\"" with administrator privileges'
 
-osascript -e 'do shell script "rm -rf \"'"$INSTALL_PATH"'\" && cp -R \"/Volumes/'"$VOLUME_NAME"'/'"$APP_NAME"'.app\" \"/Applications/\" && xattr -cr \"'"$INSTALL_PATH"'\"" with administrator privileges'
-
-hdiutil detach "/Volumes/$VOLUME_NAME" -quiet
-
+# Cleanup
+hdiutil detach "$MOUNT_POINT" -quiet || true
 rm -f "$DMG_PATH"
 
+# Relaunch
 open "$INSTALL_PATH"
 
+# Self-delete
 rm -f "$0"
 "#,
         dmg_path = dmg_path,
         volume_name = volume_name,
-        app_name = app_name,
+        app_bundle_name = app_bundle_name,
         install_path = install_path,
     );
 
