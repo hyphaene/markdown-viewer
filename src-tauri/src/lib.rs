@@ -1,11 +1,12 @@
 mod commands;
 mod state;
+mod watcher;
 
 use commands::{
-    scan_directories, read_file, get_settings, save_settings,
-    open_in_vscode, reveal_in_finder,
+    get_settings, open_in_vscode, read_file, reveal_in_finder, save_settings, scan_directories,
 };
 use state::AppState;
+use watcher::start_watching;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -19,6 +20,7 @@ pub fn run() {
             save_settings,
             open_in_vscode,
             reveal_in_finder,
+            start_watching,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

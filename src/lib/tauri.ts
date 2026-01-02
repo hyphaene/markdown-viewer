@@ -24,3 +24,7 @@ export async function openInVscode(path: string): Promise<void> {
 export async function revealInFinder(path: string): Promise<void> {
   return invoke("reveal_in_finder", { path });
 }
+
+export async function startWatching(paths: string[]): Promise<void> {
+  return invoke("start_watching", { paths });
+}
