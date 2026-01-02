@@ -23,20 +23,12 @@
       {
         "assets": [
           {
-            "path": "src-tauri/target/release/bundle/dmg/*.dmg",
-            "label": "Markdown Viewer macOS DMG (${nextRelease.version})"
+            "path": "src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg",
+            "label": "Markdown Viewer macOS ARM64 DMG"
           },
           {
-            "path": "src-tauri/target/release/bundle/macos/*.app.tar.gz",
-            "label": "Markdown Viewer macOS App (${nextRelease.version})"
-          },
-          {
-            "path": "src-tauri/target/release/bundle/appimage/*.AppImage",
-            "label": "Markdown Viewer Linux AppImage (${nextRelease.version})"
-          },
-          {
-            "path": "src-tauri/target/release/bundle/deb/*.deb",
-            "label": "Markdown Viewer Linux DEB (${nextRelease.version})"
+            "path": "src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg",
+            "label": "Markdown Viewer macOS x64 DMG"
           }
         ],
         "successComment": false,
