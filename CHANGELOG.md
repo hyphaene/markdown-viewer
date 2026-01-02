@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/hyphaene/markdown-viewer/compare/v1.2.0...v1.2.1) (2026-01-02)
+
+
+### Bug Fixes
+
+* correct DMG volume name and handle multiple mounted volumes ([74c16ef](https://github.com/hyphaene/markdown-viewer/commit/74c16efcaa897b5feb9f501fede932adca53a85f))
+
 # [1.2.0](https://github.com/hyphaene/markdown-viewer/compare/v1.1.0...v1.2.0) (2026-01-02)
 
 
