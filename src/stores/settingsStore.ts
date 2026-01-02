@@ -1,0 +1,118 @@
+import { create } from "zustand";
+import { load } from "@tauri-apps/plugin-store";
+import type { Settings, Source } from "../types";
+
+interface SettingsStore {
+  settings: Settings;
+  isLoaded: boolean;
+  isSettingsOpen: boolean;
+  loadSettings: () => Promise<void>;
+  saveSettings: (settings: Settings) => Promise<void>;
+  updateSources: (sources: Source[]) => Promise<void>;
+  updateExclusions: (exclusions: string[]) => Promise<void>;
+  updateTheme: (theme: Settings["theme"]) => Promise<void>;
+  openSettings: () => void;
+  closeSettings: () => void;
+}
+
+const defaultSettings: Settings = {
+  sources: [
+    { path: "~/Code", enabled: true },
+    { path: "~/Notes", enabled: true },
+  ],
+  exclusions: ["node_modules", ".git", "vendor", "dist", "build", "target"],
+  theme: "system",
+  lastOpenedFile: null,
+};
+
+export const useSettingsStore = create<SettingsStore>((set, get) => ({
+  settings: defaultSettings,
+  isLoaded: false,
+  isSettingsOpen: false,
+
+  loadSettings: async () => {
+    try {
+      const store = await load("settings.json");
+      const savedSettings = await store.get<Settings>("settings");
+
+      if (savedSettings) {
+        set({ settings: savedSettings, isLoaded: true });
+      } else {
+        // Save defaults if no settings exist
+        await store.set("settings", defaultSettings);
+        await store.save();
+        set({ settings: defaultSettings, isLoaded: true });
+      }
+    } catch (e) {
+      console.error("Failed to load settings:", e);
+      set({ settings: defaultSettings, isLoaded: true });
+    }
+  },
+
+  saveSettings: async (settings: Settings) => {
+    try {
+      const store = await load("settings.json");
+      await store.set("settings", settings);
+      await store.save();
+      set({ settings });
+    } catch (e) {
+      console.error("Failed to save settings:", e);
+    }
+  },
+
+  updateSources: async (sources: Source[]) => {
+    const { settings, saveSettings } = get();
+    await saveSettings({ ...settings, sources });
+  },
+
+  updateExclusions: async (exclusions: string[]) => {
+    const { settings, saveSettings } = get();
+    await saveSettings({ ...settings, exclusions });
+  },
+
+  updateTheme: async (theme: Settings["theme"]) => {
+    const { settings, saveSettings } = get();
+    await saveSettings({ ...settings, theme });
+    applyTheme(theme);
+  },
+
+  openSettings: () => set({ isSettingsOpen: true }),
+  closeSettings: () => set({ isSettingsOpen: false }),
+}));
+
+function applyTheme(theme: Settings["theme"]) {
+  const root = document.documentElement;
+
+  if (theme === "dark") {
+    root.classList.add("dark");
+  } else if (theme === "light") {
+    root.classList.remove("dark");
+  } else {
+    // System preference
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }
+}
+
+// Apply theme on initial load
+export function initializeTheme(theme: Settings["theme"]) {
+  applyTheme(theme);
+
+  // Listen for system theme changes if using system preference
+  if (theme === "system") {
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        if (useSettingsStore.getState().settings.theme === "system") {
+          if (e.matches) {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+          }
+        }
+      });
+  }
+}
