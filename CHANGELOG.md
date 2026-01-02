@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/hyphaene/markdown-viewer/compare/v1.1.0...v1.2.0) (2026-01-02)
+
+
+### Features
+
+* add native macOS menu with About dialog and improve README ([9b75716](https://github.com/hyphaene/markdown-viewer/commit/9b757168d0c5a06b1451b4a0f0c65cf3e747f4e0))
+
 # [1.1.0](https://github.com/hyphaene/markdown-viewer/compare/v1.0.2...v1.1.0) (2026-01-02)
 
 
