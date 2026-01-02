@@ -1,14 +1,28 @@
 {
   "name": "markdown-viewer",
+  "description": "A lightweight, native macOS app for browsing and reading markdown files",
+  "author": "hyphaene",
+  "license": "MIT",
   "private": true,
   "version": "1.2.2",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyphaene/markdown-viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hyphaene/markdown-viewer/issues"
+  },
+  "homepage": "https://github.com/hyphaene/markdown-viewer",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "ci": "open https://github.com/hyphaene/markdown-viewer/actions",
+    "repo": "open https://github.com/hyphaene/markdown-viewer",
+    "pr": "open https://github.com/hyphaene/markdown-viewer/pulls"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
