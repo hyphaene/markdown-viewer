@@ -1,0 +1,21 @@
+{
+  "category": "Uncategorized",
+  "description": "j'ai besoin d'une app electron qui me permet de charger l'ensemble des fichier mardown de ma machine.\n\nil doit contenir un explorer\nil doit permettre d'avoir un live preview pour pouvoir éditer le rendu visuel du markdown.\n\nle but de cette electron app, c'est de pouvoir lire confortablement mes markdown, de pouvoir les rechercher instantanément.",
+  "title": "setup big big",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "branchName": "main",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1767172100920-as1k5jqni",
+  "startedAt": "2025-12-31T09:08:21.933Z",
+  "updatedAt": "2025-12-31T09:08:22.007Z"
+}
