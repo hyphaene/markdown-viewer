@@ -3,12 +3,17 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
 import "highlight.js/styles/github-dark.css";
-import { useFileStore } from "../../stores/fileStore";
+import { useTabStore } from "../../stores/tabStore";
 import { openInVscode, revealInFinder } from "../../lib/tauri";
 import { TableOfContents } from "../TableOfContents";
 
 export function MarkdownViewer() {
-  const { selectedFile, content, isLoading } = useFileStore();
+  const { tabs, activeTabId } = useTabStore();
+  const activeTab = tabs.find((t) => t.id === activeTabId);
+
+  const selectedFile = activeTab?.path ?? null;
+  const content = activeTab?.content ?? "";
+  const isLoading = activeTab?.isLoading ?? false;
 
   if (!selectedFile) {
     return (

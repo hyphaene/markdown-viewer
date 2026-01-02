@@ -1,6 +1,7 @@
 import { useMemo, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useFileStore } from "../../stores/fileStore";
+import { useTabStore } from "../../stores/tabStore";
 import type { FileEntry } from "../../types";
 
 interface FlatItem {
@@ -11,7 +12,12 @@ interface FlatItem {
 
 export function Sidebar() {
   const parentRef = useRef<HTMLDivElement>(null);
-  const { files, selectedFile, selectFile, isLoading } = useFileStore();
+  const { files, isLoading } = useFileStore();
+  const { tabs, activeTabId, openTab } = useTabStore();
+
+  // Find the currently active file path from tabs
+  const activeTab = tabs.find((t) => t.id === activeTabId);
+  const selectedFile = activeTab?.path ?? null;
 
   const flatItems = useMemo(() => {
     const groups: { [directory: string]: FileEntry[] } = {};
@@ -103,7 +109,7 @@ export function Sidebar() {
             return (
               <button
                 key={virtualRow.key}
-                onClick={() => selectFile(file.path)}
+                onClick={() => openTab(file.path)}
                 style={{
                   position: "absolute",
                   top: 0,

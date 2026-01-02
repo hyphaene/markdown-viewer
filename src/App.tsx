@@ -6,20 +6,16 @@ import { MarkdownViewer } from "./components/MarkdownViewer";
 import { SearchBar } from "./components/SearchBar";
 import { SettingsModal } from "./components/Settings";
 import { UpdateBanner } from "./components/UpdateBanner";
+import { TabBar } from "./components/TabBar";
 import { useFileStore } from "./stores/fileStore";
+import { useTabStore } from "./stores/tabStore";
 import { useSettingsStore, initializeTheme } from "./stores/settingsStore";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import type { FileEntry } from "./types";
 
 function App() {
-  const {
-    scan,
-    addFile,
-    updateFile,
-    removeFile,
-    reloadSelectedFile,
-    selectedFile,
-  } = useFileStore();
+  const { scan, addFile, updateFile, removeFile } = useFileStore();
+  const { tabs, reloadTab } = useTabStore();
   const { settings, isLoaded, loadSettings, openSettings } = useSettingsStore();
 
   // Register keyboard shortcuts
@@ -57,9 +53,10 @@ function App() {
 
     const unlistenChanged = listen<FileEntry>("file:changed", (event) => {
       updateFile(event.payload);
-      // Reload content if the changed file is currently selected
-      if (selectedFile === event.payload.path) {
-        reloadSelectedFile();
+      // Reload any open tab with this file
+      const openTab = tabs.find((t) => t.path === event.payload.path);
+      if (openTab) {
+        reloadTab(openTab.id);
       }
     });
 
@@ -72,7 +69,7 @@ function App() {
       unlistenChanged.then((fn) => fn());
       unlistenRemoved.then((fn) => fn());
     };
-  }, [addFile, updateFile, removeFile, reloadSelectedFile, selectedFile]);
+  }, [addFile, updateFile, removeFile, tabs, reloadTab]);
 
   if (!isLoaded) {
     return (
@@ -117,7 +114,10 @@ function App() {
             </button>
           </div>
         </div>
-        <MarkdownViewer />
+        <div className="flex-1 flex flex-col min-w-0">
+          <TabBar />
+          <MarkdownViewer />
+        </div>
       </div>
       <SettingsModal />
     </div>

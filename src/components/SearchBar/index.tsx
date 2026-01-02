@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useSearchStore } from "../../stores/searchStore";
-import { useFileStore } from "../../stores/fileStore";
+import { useTabStore } from "../../stores/tabStore";
 
 export function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { query, results, setQuery, clearSearch } = useSearchStore();
-  const selectFile = useFileStore((state) => state.selectFile);
+  const openTab = useTabStore((state) => state.openTab);
 
   const handleSelect = useCallback(
     (path: string) => {
-      selectFile(path);
+      openTab(path);
       clearSearch();
       inputRef.current?.blur();
     },
-    [selectFile, clearSearch],
+    [openTab, clearSearch],
   );
 
   // Keyboard shortcut: Cmd+K to focus search

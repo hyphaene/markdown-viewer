@@ -1,10 +1,13 @@
 import { useEffect } from "react";
-import { useFileStore } from "../stores/fileStore";
+import { useTabStore } from "../stores/tabStore";
 import { useSettingsStore } from "../stores/settingsStore";
 import { openInVscode, revealInFinder } from "../lib/tauri";
 
 export function useKeyboardShortcuts() {
-  const selectedFile = useFileStore((state) => state.selectedFile);
+  const { tabs, activeTabId, closeTab, nextTab, previousTab } = useTabStore();
+  const activeTab = tabs.find((t) => t.id === activeTabId);
+  const selectedFile = activeTab?.path ?? null;
+
   const openSettings = useSettingsStore((state) => state.openSettings);
   const isSettingsOpen = useSettingsStore((state) => state.isSettingsOpen);
   const closeSettings = useSettingsStore((state) => state.closeSettings);
@@ -32,6 +35,43 @@ export function useKeyboardShortcuts() {
       if (e.key === "Escape" && isSettingsOpen) {
         e.preventDefault();
         closeSettings();
+        return;
+      }
+
+      // Cmd+W - Close current tab
+      if (isMod && e.key === "w") {
+        e.preventDefault();
+        if (activeTabId) {
+          closeTab(activeTabId);
+        }
+        return;
+      }
+
+      // Ctrl+Tab - Next tab
+      if (e.ctrlKey && e.key === "Tab" && !e.shiftKey) {
+        e.preventDefault();
+        nextTab();
+        return;
+      }
+
+      // Ctrl+Shift+Tab - Previous tab
+      if (e.ctrlKey && e.shiftKey && e.key === "Tab") {
+        e.preventDefault();
+        previousTab();
+        return;
+      }
+
+      // Cmd+Shift+] - Next tab (alternative)
+      if (isMod && e.shiftKey && e.key === "]") {
+        e.preventDefault();
+        nextTab();
+        return;
+      }
+
+      // Cmd+Shift+[ - Previous tab (alternative)
+      if (isMod && e.shiftKey && e.key === "[") {
+        e.preventDefault();
+        previousTab();
         return;
       }
 
@@ -74,5 +114,14 @@ export function useKeyboardShortcuts() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedFile, openSettings, isSettingsOpen, closeSettings]);
+  }, [
+    selectedFile,
+    activeTabId,
+    closeTab,
+    nextTab,
+    previousTab,
+    openSettings,
+    isSettingsOpen,
+    closeSettings,
+  ]);
 }
