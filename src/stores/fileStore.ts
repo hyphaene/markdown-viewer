@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { FileEntry } from "../types";
 import { scanDirectories, readFile } from "../lib/tauri";
+import { useSearchStore } from "./searchStore";
 
 interface FileStore {
   files: FileEntry[];
@@ -25,6 +26,8 @@ export const useFileStore = create<FileStore>((set) => ({
     try {
       const files = await scanDirectories(paths);
       set({ files, isLoading: false });
+      // Index files for search
+      useSearchStore.getState().indexFiles(files);
     } catch (e) {
       set({ error: String(e), isLoading: false });
     }
