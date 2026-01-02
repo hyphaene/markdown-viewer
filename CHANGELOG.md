@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/hyphaene/markdown-viewer/compare/v1.2.1...v1.2.2) (2026-01-02)
+
+
+### Bug Fixes
+
+* build after version bump so DMG has correct version ([5701297](https://github.com/hyphaene/markdown-viewer/commit/570129748d28d0cbbecdde13cd1f2bd63bd48c1c))
+
 ## [1.2.1](https://github.com/hyphaene/markdown-viewer/compare/v1.2.0...v1.2.1) (2026-01-02)
 
 
