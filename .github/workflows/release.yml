@@ -47,12 +47,6 @@ jobs:
         with:
           workspaces: src-tauri
 
-      - name: Build Tauri (Apple Silicon)
-        run: pnpm tauri build --target aarch64-apple-darwin
-
-      - name: Build Tauri (Intel)
-        run: pnpm tauri build --target x86_64-apple-darwin
-
       - name: Run semantic-release
         run: pnpm semantic-release
         env:
