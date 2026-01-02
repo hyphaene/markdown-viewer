@@ -1,9 +1,11 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
+import rehypeSlug from "rehype-slug";
 import "highlight.js/styles/github-dark.css";
 import { useFileStore } from "../../stores/fileStore";
 import { openInVscode, revealInFinder } from "../../lib/tauri";
+import { TableOfContents } from "../TableOfContents";
 
 export function MarkdownViewer() {
   const { selectedFile, content, isLoading } = useFileStore();
@@ -56,34 +58,43 @@ export function MarkdownViewer() {
   };
 
   return (
-    <main className="flex-1 flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-800">
-      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-        <h1 className="text-lg font-semibold truncate" title={selectedFile}>
-          {fileName}
-        </h1>
-        <div className="flex items-center gap-2">
-          <ActionButton onClick={handleOpenInVscode} title="Open in VS Code">
-            <VscodeIcon />
-          </ActionButton>
-          <ActionButton onClick={handleRevealInFinder} title="Reveal in Finder">
-            <FinderIcon />
-          </ActionButton>
-          <ActionButton onClick={handleCopyPath} title="Copy Path">
-            <CopyIcon />
-          </ActionButton>
+    <div className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-800">
+        <header className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+          <h1 className="text-lg font-semibold truncate" title={selectedFile}>
+            {fileName}
+          </h1>
+          <div className="flex items-center gap-2">
+            <ActionButton
+              onClick={handleOpenInVscode}
+              title="Open in VS Code (⌘O)"
+            >
+              <VscodeIcon />
+            </ActionButton>
+            <ActionButton
+              onClick={handleRevealInFinder}
+              title="Reveal in Finder (⌘⇧R)"
+            >
+              <FinderIcon />
+            </ActionButton>
+            <ActionButton onClick={handleCopyPath} title="Copy Path (⌘⇧C)">
+              <CopyIcon />
+            </ActionButton>
+          </div>
+        </header>
+        <div className="flex-1 overflow-auto p-6">
+          <article className="prose prose-gray dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-code:before:content-none prose-code:after:content-none prose-pre:bg-gray-900 prose-pre:text-gray-100">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeHighlight, rehypeSlug]}
+            >
+              {content}
+            </ReactMarkdown>
+          </article>
         </div>
-      </header>
-      <div className="flex-1 overflow-auto p-6">
-        <article className="prose prose-gray dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-code:before:content-none prose-code:after:content-none prose-pre:bg-gray-900 prose-pre:text-gray-100">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight]}
-          >
-            {content}
-          </ReactMarkdown>
-        </article>
-      </div>
-    </main>
+      </main>
+      <TableOfContents content={content} />
+    </div>
   );
 }
 

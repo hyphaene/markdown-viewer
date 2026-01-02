@@ -1,16 +1,20 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useFileStore } from "../../stores/fileStore";
 import type { FileEntry } from "../../types";
 
-interface GroupedFiles {
-  [directory: string]: FileEntry[];
+interface FlatItem {
+  type: "header" | "file";
+  directory?: string;
+  file?: FileEntry;
 }
 
 export function Sidebar() {
+  const parentRef = useRef<HTMLDivElement>(null);
   const { files, selectedFile, selectFile, isLoading } = useFileStore();
 
-  const groupedFiles = useMemo(() => {
-    const groups: GroupedFiles = {};
+  const flatItems = useMemo(() => {
+    const groups: { [directory: string]: FileEntry[] } = {};
     for (const file of files) {
       const dir = file.path.substring(0, file.path.lastIndexOf("/"));
       if (!groups[dir]) {
@@ -18,10 +22,26 @@ export function Sidebar() {
       }
       groups[dir].push(file);
     }
-    return groups;
+
+    const items: FlatItem[] = [];
+    const directories = Object.keys(groups).sort();
+
+    for (const dir of directories) {
+      items.push({ type: "header", directory: dir });
+      for (const file of groups[dir]) {
+        items.push({ type: "file", file, directory: dir });
+      }
+    }
+
+    return items;
   }, [files]);
 
-  const directories = Object.keys(groupedFiles).sort();
+  const virtualizer = useVirtualizer({
+    count: flatItems.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: (index) => (flatItems[index].type === "header" ? 28 : 32),
+    overscan: 10,
+  });
 
   if (isLoading && files.length === 0) {
     return (
@@ -44,34 +64,67 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex-1 overflow-auto">
-      <div className="text-xs text-gray-500 dark:text-gray-400 px-4 py-2">
+    <aside className="flex-1 flex flex-col overflow-hidden">
+      <div className="text-xs text-gray-500 dark:text-gray-400 px-4 py-2 shrink-0">
         {files.length} files
       </div>
-      {directories.map((dir) => (
-        <div key={dir} className="mb-2">
-          <div
-            className="px-4 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 truncate"
-            title={dir}
-          >
-            {shortenPath(dir)}
-          </div>
-          {groupedFiles[dir].map((file) => (
-            <button
-              key={file.path}
-              onClick={() => selectFile(file.path)}
-              className={`w-full text-left px-4 py-1.5 text-sm truncate hover:bg-gray-200 dark:hover:bg-gray-700 ${
-                selectedFile === file.path
-                  ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
-                  : ""
-              }`}
-              title={file.path}
-            >
-              {file.name}
-            </button>
-          ))}
+      <div ref={parentRef} className="flex-1 overflow-auto">
+        <div
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            width: "100%",
+            position: "relative",
+          }}
+        >
+          {virtualizer.getVirtualItems().map((virtualRow) => {
+            const item = flatItems[virtualRow.index];
+
+            if (item.type === "header") {
+              return (
+                <div
+                  key={virtualRow.key}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                  className="px-4 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 truncate"
+                  title={item.directory}
+                >
+                  {shortenPath(item.directory!)}
+                </div>
+              );
+            }
+
+            const file = item.file!;
+            return (
+              <button
+                key={virtualRow.key}
+                onClick={() => selectFile(file.path)}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: `${virtualRow.size}px`,
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+                className={`text-left px-4 py-1.5 text-sm truncate hover:bg-gray-200 dark:hover:bg-gray-700 ${
+                  selectedFile === file.path
+                    ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
+                    : ""
+                }`}
+                title={file.path}
+              >
+                {file.name}
+              </button>
+            );
+          })}
         </div>
-      ))}
+      </div>
     </aside>
   );
 }

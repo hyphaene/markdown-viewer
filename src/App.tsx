@@ -7,6 +7,7 @@ import { SearchBar } from "./components/SearchBar";
 import { SettingsModal } from "./components/Settings";
 import { useFileStore } from "./stores/fileStore";
 import { useSettingsStore, initializeTheme } from "./stores/settingsStore";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import type { FileEntry } from "./types";
 
 function App() {
@@ -19,6 +20,9 @@ function App() {
     selectedFile,
   } = useFileStore();
   const { settings, isLoaded, loadSettings, openSettings } = useSettingsStore();
+
+  // Register keyboard shortcuts
+  useKeyboardShortcuts();
 
   // Load settings on mount
   useEffect(() => {
