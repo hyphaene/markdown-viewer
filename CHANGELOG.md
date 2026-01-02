@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/hyphaene/markdown-viewer/compare/v1.4.0...v1.5.0) (2026-01-02)
+
+
+### Features
+
+* add tab system for multi-file navigation ([40a1801](https://github.com/hyphaene/markdown-viewer/commit/40a180168004656c67d4ad14eb45bb73e5baab8d))
+
 # [1.4.0](https://github.com/hyphaene/markdown-viewer/compare/v1.3.0...v1.4.0) (2026-01-02)
 
 
