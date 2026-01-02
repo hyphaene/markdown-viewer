@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/hyphaene/markdown-viewer/compare/v1.3.0...v1.4.0) (2026-01-02)
+
+
+### Features
+
+* open app maximized on startup ([d4c53aa](https://github.com/hyphaene/markdown-viewer/commit/d4c53aaa3538724f3822ef0e3f9863157ff07c7a))
+
 # [1.3.0](https://github.com/hyphaene/markdown-viewer/compare/v1.2.2...v1.3.0) (2026-01-02)
 
 
