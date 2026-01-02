@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/hyphaene/markdown-viewer/compare/v1.0.1...v1.0.2) (2026-01-02)
+
+
+### Bug Fixes
+
+* add store permission for settings persistence ([e2dc5bc](https://github.com/hyphaene/markdown-viewer/commit/e2dc5bc97f7488e7656d7bd175ad6be8900b6446))
+
 ## [1.0.1](https://github.com/hyphaene/markdown-viewer/compare/v1.0.0...v1.0.1) (2026-01-02)
 
 
