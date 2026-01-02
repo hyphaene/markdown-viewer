@@ -16,3 +16,10 @@ export interface Settings {
   theme: "light" | "dark" | "system";
   lastOpenedFile: string | null;
 }
+
+export interface UpdateInfo {
+  version: string;
+  download_url: string;
+  release_notes: string;
+  published_at: string;
+}
