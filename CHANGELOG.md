@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/hyphaene/markdown-viewer/compare/v1.0.0...v1.0.1) (2026-01-02)
+
+
+### Bug Fixes
+
+* set proper window title ([3567bfc](https://github.com/hyphaene/markdown-viewer/commit/3567bfc3f8ba293f90e9d2bc9c3e60f833e85f6f))
+
 # 1.0.0 (2026-01-02)
 
 
