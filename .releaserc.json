@@ -15,7 +15,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "node scripts/sync-versions.cjs ${nextRelease.version} && pnpm tauri build --target aarch64-apple-darwin && pnpm tauri build --target x86_64-apple-darwin"
+        "prepareCmd": "node scripts/sync-versions.cjs ${nextRelease.version} && pnpm tauri build --target aarch64-apple-darwin"
       }
     ],
     [
@@ -25,10 +25,6 @@
           {
             "path": "src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg",
             "label": "Markdown Viewer macOS ARM64 DMG"
-          },
-          {
-            "path": "src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg",
-            "label": "Markdown Viewer macOS x64 DMG"
           }
         ],
         "successComment": false,
