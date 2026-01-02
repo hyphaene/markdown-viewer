@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/hyphaene/markdown-viewer/compare/v1.2.2...v1.3.0) (2026-01-02)
+
+
+### Features
+
+* update app icon with custom logo ([491a9e3](https://github.com/hyphaene/markdown-viewer/commit/491a9e347325b2c0c560ab94d4e15ebda2011b82))
+
 ## [1.2.2](https://github.com/hyphaene/markdown-viewer/compare/v1.2.1...v1.2.2) (2026-01-02)
 
 
