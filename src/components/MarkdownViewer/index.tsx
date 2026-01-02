@@ -1,3 +1,7 @@
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css";
 import { useFileStore } from "../../stores/fileStore";
 
 export function MarkdownViewer() {
@@ -34,7 +38,14 @@ export function MarkdownViewer() {
         </h1>
       </header>
       <div className="flex-1 overflow-auto p-6">
-        <pre className="whitespace-pre-wrap font-mono text-sm">{content}</pre>
+        <article className="prose prose-gray dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-code:before:content-none prose-code:after:content-none prose-pre:bg-gray-900 prose-pre:text-gray-100">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeHighlight]}
+          >
+            {content}
+          </ReactMarkdown>
+        </article>
       </div>
     </main>
   );
