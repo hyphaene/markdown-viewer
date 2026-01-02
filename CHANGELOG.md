@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/hyphaene/markdown-viewer/compare/v1.0.2...v1.1.0) (2026-01-02)
+
+
+### Features
+
+* add auto-update mechanism ([4b4b7af](https://github.com/hyphaene/markdown-viewer/commit/4b4b7af529052c5100424f7ed702e39e95b2451d))
+
 ## [1.0.2](https://github.com/hyphaene/markdown-viewer/compare/v1.0.1...v1.0.2) (2026-01-02)
 
 
