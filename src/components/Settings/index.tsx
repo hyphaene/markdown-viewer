@@ -13,12 +13,16 @@ export function SettingsModal() {
   const [localTheme, setLocalTheme] = useState<Settings["theme"]>(
     settings.theme,
   );
+  const [localFontSize, setLocalFontSize] = useState<number>(
+    settings.fontSize ?? 18,
+  );
 
   // Sync local state when settings change
   useEffect(() => {
     setLocalSources(settings.sources);
     setLocalExclusions(settings.exclusions.join(", "));
     setLocalTheme(settings.theme);
+    setLocalFontSize(settings.fontSize ?? 18);
   }, [settings, isSettingsOpen]);
 
   if (!isSettingsOpen) return null;
@@ -34,6 +38,7 @@ export function SettingsModal() {
       sources: localSources,
       exclusions,
       theme: localTheme,
+      fontSize: localFontSize,
     });
     closeSettings();
     // Trigger rescan if sources changed
@@ -106,6 +111,42 @@ export function SettingsModal() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Font Size */}
+          <div>
+            <label className="block text-sm font-medium text-text mb-3">
+              Font Size
+            </label>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() =>
+                  setLocalFontSize(Math.max(12, localFontSize - 2))
+                }
+                disabled={localFontSize <= 12}
+                className="w-10 h-10 rounded-lg border border-white/10 text-muted hover:text-text hover:border-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-lg font-medium"
+              >
+                −
+              </button>
+              <div className="flex-1 text-center">
+                <span className="text-2xl font-semibold text-text">
+                  {localFontSize}
+                </span>
+                <span className="text-muted ml-1">px</span>
+              </div>
+              <button
+                onClick={() =>
+                  setLocalFontSize(Math.min(32, localFontSize + 2))
+                }
+                disabled={localFontSize >= 32}
+                className="w-10 h-10 rounded-lg border border-white/10 text-muted hover:text-text hover:border-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-lg font-medium"
+              >
+                +
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-muted text-center">
+              Tip: Use ⌘+ and ⌘− to adjust font size anytime
+            </p>
           </div>
 
           {/* Source Directories */}

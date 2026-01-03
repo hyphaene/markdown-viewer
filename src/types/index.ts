@@ -14,6 +14,7 @@ export interface Settings {
   sources: Source[];
   exclusions: string[];
   theme: "light" | "dark" | "system";
+  fontSize: number; // in pixels, default 18
   lastOpenedFile: string | null;
 }
 

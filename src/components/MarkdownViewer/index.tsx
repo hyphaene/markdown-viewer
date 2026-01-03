@@ -4,12 +4,14 @@ import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
 import "highlight.js/styles/github-dark.css";
 import { useTabStore } from "../../stores/tabStore";
+import { useSettingsStore } from "../../stores/settingsStore";
 import { openInVscode, revealInFinder } from "../../lib/tauri";
 import { TableOfContents } from "../TableOfContents";
 
 export function MarkdownViewer() {
   const { tabs, activeTabId } = useTabStore();
   const activeTab = tabs.find((t) => t.id === activeTabId);
+  const fontSize = useSettingsStore((state) => state.settings.fontSize ?? 18);
 
   const selectedFile = activeTab?.path ?? null;
   const content = activeTab?.content ?? "";
@@ -122,8 +124,11 @@ export function MarkdownViewer() {
             </ActionButton>
           </div>
         </header>
-        <div className="flex-1 overflow-auto p-8">
-          <article className="prose prose-invert prose-custom max-w-4xl mx-auto prose-headings:font-semibold prose-code:before:content-none prose-code:after:content-none prose-code:font-mono">
+        <div className="flex-1 overflow-auto p-8 grid-background">
+          <article
+            className="prose prose-invert prose-custom max-w-4xl mx-auto prose-headings:font-semibold prose-code:before:content-none prose-code:after:content-none prose-code:font-mono"
+            style={{ fontSize: `${fontSize}px` }}
+          >
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeHighlight, rehypeSlug]}
