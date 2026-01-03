@@ -7,14 +7,15 @@ export interface Tab {
   name: string;
   content: string;
   isLoading: boolean;
-  isDirty: boolean; // For future edit feature
+  isDirty: boolean;
 }
 
-interface TabStore {
+interface TabState {
   tabs: Tab[];
   activeTabId: string | null;
+}
 
-  // Actions
+interface TabActions {
   openTab: (path: string) => Promise<void>;
   closeTab: (id: string) => void;
   closeOtherTabs: (id: string) => void;
@@ -24,10 +25,10 @@ interface TabStore {
   previousTab: () => void;
   reloadTab: (id: string) => Promise<void>;
   reloadActiveTab: () => Promise<void>;
-
-  // Derived
   getActiveTab: () => Tab | null;
 }
+
+type TabStore = TabState & TabActions;
 
 function generateTabId(): string {
   return `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -44,14 +45,12 @@ export const useTabStore = create<TabStore>((set, get) => ({
   openTab: async (path: string) => {
     const { tabs } = get();
 
-    // Check if tab already exists for this path
-    const existingTab = tabs.find((t) => t.path === path);
+    const existingTab = tabs.find((t: Tab) => t.path === path);
     if (existingTab) {
       set({ activeTabId: existingTab.id });
       return;
     }
 
-    // Create new tab
     const newTab: Tab = {
       id: generateTabId(),
       path,
@@ -61,23 +60,22 @@ export const useTabStore = create<TabStore>((set, get) => ({
       isDirty: false,
     };
 
-    set((state) => ({
+    set((state: TabState) => ({
       tabs: [...state.tabs, newTab],
       activeTabId: newTab.id,
     }));
 
-    // Load content
     try {
       const content = await readFile(path);
-      set((state) => ({
-        tabs: state.tabs.map((t) =>
+      set((state: TabState) => ({
+        tabs: state.tabs.map((t: Tab) =>
           t.id === newTab.id ? { ...t, content, isLoading: false } : t,
         ),
       }));
     } catch (e) {
       console.error("Failed to load file:", e);
-      set((state) => ({
-        tabs: state.tabs.map((t) =>
+      set((state: TabState) => ({
+        tabs: state.tabs.map((t: Tab) =>
           t.id === newTab.id
             ? { ...t, content: `Error loading file: ${e}`, isLoading: false }
             : t,
@@ -88,12 +86,11 @@ export const useTabStore = create<TabStore>((set, get) => ({
 
   closeTab: (id: string) => {
     const { tabs, activeTabId } = get();
-    const tabIndex = tabs.findIndex((t) => t.id === id);
+    const tabIndex = tabs.findIndex((t: Tab) => t.id === id);
     if (tabIndex === -1) return;
 
-    const newTabs = tabs.filter((t) => t.id !== id);
+    const newTabs = tabs.filter((t: Tab) => t.id !== id);
 
-    // If closing active tab, activate adjacent tab
     let newActiveId: string | null = activeTabId;
     if (activeTabId === id) {
       if (newTabs.length === 0) {
@@ -109,8 +106,8 @@ export const useTabStore = create<TabStore>((set, get) => ({
   },
 
   closeOtherTabs: (id: string) => {
-    set((state) => ({
-      tabs: state.tabs.filter((t) => t.id === id),
+    set((state: TabState) => ({
+      tabs: state.tabs.filter((t: Tab) => t.id === id),
       activeTabId: id,
     }));
   },
@@ -127,7 +124,7 @@ export const useTabStore = create<TabStore>((set, get) => ({
     const { tabs, activeTabId } = get();
     if (tabs.length === 0) return;
 
-    const currentIndex = tabs.findIndex((t) => t.id === activeTabId);
+    const currentIndex = tabs.findIndex((t: Tab) => t.id === activeTabId);
     const nextIndex = (currentIndex + 1) % tabs.length;
     set({ activeTabId: tabs[nextIndex].id });
   },
@@ -136,33 +133,33 @@ export const useTabStore = create<TabStore>((set, get) => ({
     const { tabs, activeTabId } = get();
     if (tabs.length === 0) return;
 
-    const currentIndex = tabs.findIndex((t) => t.id === activeTabId);
+    const currentIndex = tabs.findIndex((t: Tab) => t.id === activeTabId);
     const prevIndex = currentIndex <= 0 ? tabs.length - 1 : currentIndex - 1;
     set({ activeTabId: tabs[prevIndex].id });
   },
 
   reloadTab: async (id: string) => {
     const { tabs } = get();
-    const tab = tabs.find((t) => t.id === id);
+    const tab = tabs.find((t: Tab) => t.id === id);
     if (!tab) return;
 
-    set((state) => ({
-      tabs: state.tabs.map((t) =>
+    set((state: TabState) => ({
+      tabs: state.tabs.map((t: Tab) =>
         t.id === id ? { ...t, isLoading: true } : t,
       ),
     }));
 
     try {
       const content = await readFile(tab.path);
-      set((state) => ({
-        tabs: state.tabs.map((t) =>
+      set((state: TabState) => ({
+        tabs: state.tabs.map((t: Tab) =>
           t.id === id ? { ...t, content, isLoading: false } : t,
         ),
       }));
     } catch (e) {
       console.error("Failed to reload file:", e);
-      set((state) => ({
-        tabs: state.tabs.map((t) =>
+      set((state: TabState) => ({
+        tabs: state.tabs.map((t: Tab) =>
           t.id === id ? { ...t, isLoading: false } : t,
         ),
       }));
@@ -178,6 +175,6 @@ export const useTabStore = create<TabStore>((set, get) => ({
 
   getActiveTab: () => {
     const { tabs, activeTabId } = get();
-    return tabs.find((t) => t.id === activeTabId) || null;
+    return tabs.find((t: Tab) => t.id === activeTabId) || null;
   },
 }));

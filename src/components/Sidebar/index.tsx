@@ -45,14 +45,15 @@ export function Sidebar() {
   const virtualizer = useVirtualizer({
     count: flatItems.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: (index) => (flatItems[index].type === "header" ? 28 : 32),
+    estimateSize: (index) => (flatItems[index].type === "header" ? 32 : 36),
     overscan: 10,
   });
 
   if (isLoading && files.length === 0) {
     return (
       <aside className="flex-1 overflow-auto p-4">
-        <div className="text-gray-500 dark:text-gray-400 text-sm">
+        <div className="flex items-center gap-2 text-muted text-sm">
+          <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
           Scanning...
         </div>
       </aside>
@@ -62,17 +63,15 @@ export function Sidebar() {
   if (files.length === 0) {
     return (
       <aside className="flex-1 overflow-auto p-4">
-        <div className="text-gray-500 dark:text-gray-400 text-sm">
-          No markdown files found
-        </div>
+        <div className="text-muted text-sm">No markdown files found</div>
       </aside>
     );
   }
 
   return (
     <aside className="flex-1 flex flex-col overflow-hidden">
-      <div className="text-xs text-gray-500 dark:text-gray-400 px-4 py-2 shrink-0">
-        {files.length} files
+      <div className="text-xs text-muted px-4 py-2.5 shrink-0 border-b border-white/5">
+        <span className="text-accent font-medium">{files.length}</span> files
       </div>
       <div ref={parentRef} className="flex-1 overflow-auto">
         <div
@@ -97,15 +96,26 @@ export function Sidebar() {
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
-                  className="px-4 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 truncate"
+                  className="px-4 py-2 text-xs font-medium text-muted truncate flex items-center gap-2"
                   title={item.directory}
                 >
+                  <svg
+                    className="w-3.5 h-3.5 text-accent/50"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                  </svg>
                   {shortenPath(item.directory!)}
                 </div>
               );
             }
 
             const file = item.file!;
+            const isSelected = selectedFile === file.path;
+
             return (
               <button
                 key={virtualRow.key}
@@ -118,13 +128,26 @@ export function Sidebar() {
                   height: `${virtualRow.size}px`,
                   transform: `translateY(${virtualRow.start}px)`,
                 }}
-                className={`text-left px-4 py-1.5 text-sm truncate hover:bg-gray-200 dark:hover:bg-gray-700 ${
-                  selectedFile === file.path
-                    ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
-                    : ""
-                }`}
+                className={`
+                  text-left px-4 py-2 text-sm truncate transition-all flex items-center gap-2
+                  ${
+                    isSelected
+                      ? "bg-accent/10 text-accent border-r-2 border-r-accent"
+                      : "text-text/80 hover:bg-white/5 hover:text-text"
+                  }
+                `}
                 title={file.path}
               >
+                <svg
+                  className={`w-4 h-4 flex-shrink-0 ${isSelected ? "text-accent" : "text-muted"}`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
                 {file.name}
               </button>
             );
