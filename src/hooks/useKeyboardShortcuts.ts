@@ -13,6 +13,12 @@ export function useKeyboardShortcuts() {
   const closeSettings = useSettingsStore((state) => state.closeSettings);
   const increaseFontSize = useSettingsStore((state) => state.increaseFontSize);
   const decreaseFontSize = useSettingsStore((state) => state.decreaseFontSize);
+  const increaseContentWidth = useSettingsStore(
+    (state) => state.increaseContentWidth,
+  );
+  const decreaseContentWidth = useSettingsStore(
+    (state) => state.decreaseContentWidth,
+  );
 
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
@@ -44,6 +50,20 @@ export function useKeyboardShortcuts() {
       if (isMod && e.key === "-") {
         e.preventDefault();
         decreaseFontSize();
+        return;
+      }
+
+      // Shift+= or Shift++ - Increase content width
+      if (e.shiftKey && !isMod && (e.key === "=" || e.key === "+")) {
+        e.preventDefault();
+        increaseContentWidth();
+        return;
+      }
+
+      // Shift+- - Decrease content width (both keyboard minus and numpad minus)
+      if (e.shiftKey && !isMod && (e.key === "_" || e.key === "-")) {
+        e.preventDefault();
+        decreaseContentWidth();
         return;
       }
 
@@ -143,5 +163,7 @@ export function useKeyboardShortcuts() {
     closeSettings,
     increaseFontSize,
     decreaseFontSize,
+    increaseContentWidth,
+    decreaseContentWidth,
   ]);
 }

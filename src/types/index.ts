@@ -15,6 +15,8 @@ export interface Settings {
   exclusions: string[];
   theme: "light" | "dark" | "system";
   fontSize: number; // in pixels, default 18
+  contentPadding: number; // in pixels, default 16
+  contentWidth: number; // in pixels, default 896 (max-w-4xl)
   lastOpenedFile: string | null;
 }
 
