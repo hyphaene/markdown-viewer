@@ -11,9 +11,30 @@ interface SettingsStore {
   updateSources: (sources: Source[]) => Promise<void>;
   updateExclusions: (exclusions: string[]) => Promise<void>;
   updateTheme: (theme: Settings["theme"]) => Promise<void>;
+  updateFontSize: (fontSize: number) => Promise<void>;
+  increaseFontSize: () => void;
+  decreaseFontSize: () => void;
+  updateContentPadding: (padding: number) => Promise<void>;
+  increaseContentPadding: () => void;
+  decreaseContentPadding: () => void;
+  updateContentMargin: (margin: number) => Promise<void>;
+  increaseContentMargin: () => void;
+  decreaseContentMargin: () => void;
   openSettings: () => void;
   closeSettings: () => void;
 }
+
+const MIN_FONT_SIZE = 12;
+const MAX_FONT_SIZE = 32;
+const FONT_SIZE_STEP = 2;
+
+const MIN_CONTENT_PADDING = 8;
+const MAX_CONTENT_PADDING = 64;
+const CONTENT_PADDING_STEP = 8;
+
+const MIN_CONTENT_MARGIN = 50;
+const MAX_CONTENT_MARGIN = 1200;
+const CONTENT_MARGIN_STEP = 50;
 
 const defaultSettings: Settings = {
   sources: [
@@ -22,6 +43,9 @@ const defaultSettings: Settings = {
   ],
   exclusions: ["node_modules", ".git", "vendor", "dist", "build", "target"],
   theme: "system",
+  fontSize: 18,
+  contentPadding: 16,
+  contentMargin: 200,
   lastOpenedFile: null,
 };
 
@@ -74,6 +98,67 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     const { settings, saveSettings } = get();
     await saveSettings({ ...settings, theme });
     applyTheme(theme);
+  },
+
+  updateFontSize: async (fontSize: number) => {
+    const { settings, saveSettings } = get();
+    const clampedSize = Math.min(
+      MAX_FONT_SIZE,
+      Math.max(MIN_FONT_SIZE, fontSize),
+    );
+    await saveSettings({ ...settings, fontSize: clampedSize });
+  },
+
+  increaseFontSize: () => {
+    const { settings, updateFontSize } = get();
+    updateFontSize(settings.fontSize + FONT_SIZE_STEP);
+  },
+
+  decreaseFontSize: () => {
+    const { settings, updateFontSize } = get();
+    updateFontSize(settings.fontSize - FONT_SIZE_STEP);
+  },
+
+  updateContentPadding: async (padding: number) => {
+    const { settings, saveSettings } = get();
+    const clampedPadding = Math.min(
+      MAX_CONTENT_PADDING,
+      Math.max(MIN_CONTENT_PADDING, padding),
+    );
+    await saveSettings({ ...settings, contentPadding: clampedPadding });
+  },
+
+  increaseContentPadding: () => {
+    const { settings, updateContentPadding } = get();
+    updateContentPadding(
+      (settings.contentPadding ?? 16) + CONTENT_PADDING_STEP,
+    );
+  },
+
+  decreaseContentPadding: () => {
+    const { settings, updateContentPadding } = get();
+    updateContentPadding(
+      (settings.contentPadding ?? 16) - CONTENT_PADDING_STEP,
+    );
+  },
+
+  updateContentMargin: async (margin: number) => {
+    const { settings, saveSettings } = get();
+    const clampedMargin = Math.min(
+      MAX_CONTENT_MARGIN,
+      Math.max(MIN_CONTENT_MARGIN, margin),
+    );
+    await saveSettings({ ...settings, contentMargin: clampedMargin });
+  },
+
+  increaseContentMargin: () => {
+    const { settings, updateContentMargin } = get();
+    updateContentMargin((settings.contentMargin ?? 200) + CONTENT_MARGIN_STEP);
+  },
+
+  decreaseContentMargin: () => {
+    const { settings, updateContentMargin } = get();
+    updateContentMargin((settings.contentMargin ?? 200) - CONTENT_MARGIN_STEP);
   },
 
   openSettings: () => set({ isSettingsOpen: true }),

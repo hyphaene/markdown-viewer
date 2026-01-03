@@ -14,6 +14,9 @@ export interface Settings {
   sources: Source[];
   exclusions: string[];
   theme: "light" | "dark" | "system";
+  fontSize: number; // in pixels, default 18
+  contentPadding: number; // vertical padding in pixels, default 16
+  contentMargin: number; // horizontal margin in pixels, default 200
   lastOpenedFile: string | null;
 }
 

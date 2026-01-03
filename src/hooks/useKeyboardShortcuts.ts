@@ -11,6 +11,14 @@ export function useKeyboardShortcuts() {
   const openSettings = useSettingsStore((state) => state.openSettings);
   const isSettingsOpen = useSettingsStore((state) => state.isSettingsOpen);
   const closeSettings = useSettingsStore((state) => state.closeSettings);
+  const increaseFontSize = useSettingsStore((state) => state.increaseFontSize);
+  const decreaseFontSize = useSettingsStore((state) => state.decreaseFontSize);
+  const increaseContentMargin = useSettingsStore(
+    (state) => state.increaseContentMargin,
+  );
+  const decreaseContentMargin = useSettingsStore(
+    (state) => state.decreaseContentMargin,
+  );
 
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
@@ -28,6 +36,34 @@ export function useKeyboardShortcuts() {
       if (isMod && e.key === ",") {
         e.preventDefault();
         openSettings();
+        return;
+      }
+
+      // Cmd+= or Cmd++ - Increase font size
+      if (isMod && (e.key === "=" || e.key === "+")) {
+        e.preventDefault();
+        increaseFontSize();
+        return;
+      }
+
+      // Cmd+- - Decrease font size
+      if (isMod && e.key === "-") {
+        e.preventDefault();
+        decreaseFontSize();
+        return;
+      }
+
+      // Shift+= or Shift++ - Decrease content margin (more width for content)
+      if (e.shiftKey && !isMod && (e.key === "=" || e.key === "+")) {
+        e.preventDefault();
+        decreaseContentMargin();
+        return;
+      }
+
+      // Shift+- - Increase content margin (less width for content)
+      if (e.shiftKey && !isMod && (e.key === "_" || e.key === "-")) {
+        e.preventDefault();
+        increaseContentMargin();
         return;
       }
 
@@ -112,8 +148,10 @@ export function useKeyboardShortcuts() {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    // Use capture phase to intercept before browser/Tauri handles zoom shortcuts
+    window.addEventListener("keydown", handleKeyDown, { capture: true });
+    return () =>
+      window.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [
     selectedFile,
     activeTabId,
@@ -123,5 +161,9 @@ export function useKeyboardShortcuts() {
     openSettings,
     isSettingsOpen,
     closeSettings,
+    increaseFontSize,
+    decreaseFontSize,
+    increaseContentMargin,
+    decreaseContentMargin,
   ]);
 }

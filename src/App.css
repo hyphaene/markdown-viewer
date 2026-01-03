@@ -1,2 +1,138 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+/* Design System - max-website */
+@theme {
+  /* Colors */
+  --color-background: #0a0a0f;
+  --color-surface: #12121a;
+  --color-accent: #00d4aa;
+  --color-accent-alt: #6366f1;
+  --color-text: #e4e4e7;
+  --color-muted: #71717a;
+
+  /* Fonts */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+}
+
+/* Base styles */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-feature-settings: "ss01", "ss02", "cv01";
+}
+
+/* Selection */
+::selection {
+  background-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  color: white;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, white 10%, transparent);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, white 20%, transparent);
+}
+
+/* Grid background */
+.grid-background {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Glow effects */
+.glow {
+  box-shadow: 0 0 40px -10px var(--color-accent);
+}
+
+.glow-sm {
+  box-shadow: 0 0 20px -5px var(--color-accent);
+}
+
+/* Typography overrides for markdown */
+.prose-custom {
+  --tw-prose-body: var(--color-text);
+  --tw-prose-headings: var(--color-text);
+  --tw-prose-lead: color-mix(in srgb, var(--color-text) 90%, transparent);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-bold: var(--color-text);
+  --tw-prose-counters: var(--color-muted);
+  --tw-prose-bullets: var(--color-muted);
+  --tw-prose-hr: color-mix(in srgb, white 10%, transparent);
+  --tw-prose-quotes: var(--color-text);
+  --tw-prose-quote-borders: var(--color-accent);
+  --tw-prose-captions: var(--color-muted);
+  --tw-prose-code: var(--color-accent);
+  --tw-prose-pre-code: var(--color-text);
+  --tw-prose-pre-bg: var(--color-surface);
+  --tw-prose-th-borders: color-mix(in srgb, white 10%, transparent);
+  --tw-prose-td-borders: color-mix(in srgb, white 5%, transparent);
+}
+
+.prose-custom a {
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.prose-custom a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.prose-custom code:not(pre code) {
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.875em;
+}
+
+.prose-custom pre {
+  border: 1px solid color-mix(in srgb, white 5%, transparent);
+  border-radius: 12px;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}

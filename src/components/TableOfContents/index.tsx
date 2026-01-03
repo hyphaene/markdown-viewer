@@ -38,9 +38,9 @@ export function TableOfContents({ content }: TableOfContentsProps) {
   const minLevel = Math.min(...headings.map((h) => h.level));
 
   return (
-    <nav className="w-56 shrink-0 border-l border-gray-200 dark:border-gray-700 overflow-auto hidden lg:block">
+    <nav className="w-56 shrink-0 border-l border-white/5 overflow-auto hidden lg:block bg-surface">
       <div className="p-4">
-        <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+        <h3 className="text-xs font-semibold text-muted uppercase tracking-wider mb-4">
           On this page
         </h3>
         <ul className="space-y-1">
@@ -51,7 +51,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
             >
               <a
                 href={`#${heading.id}`}
-                className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 truncate py-0.5"
+                className="block text-sm text-text/70 hover:text-accent truncate py-1 transition-colors"
                 title={heading.text}
               >
                 {heading.text}

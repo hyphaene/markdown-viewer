@@ -8,7 +8,7 @@ export function TabBar() {
   }
 
   return (
-    <div className="flex items-center bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+    <div className="flex items-center bg-surface border-b border-white/5 overflow-x-auto">
       {tabs.map((tab) => (
         <Tab
           key={tab.id}
@@ -52,27 +52,26 @@ function Tab({
       onClick={onClick}
       title={path}
       className={`
-        group flex items-center gap-2 px-3 py-2 min-w-0 max-w-[200px] cursor-pointer
-        border-r border-gray-200 dark:border-gray-700
+        group flex items-center gap-2 px-4 py-2.5 min-w-0 max-w-[200px] cursor-pointer
+        border-r border-white/5 transition-all
         ${
           isActive
-            ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-            : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-750"
+            ? "bg-background text-text border-b-2 border-b-accent"
+            : "text-muted hover:text-text hover:bg-white/5"
         }
       `}
     >
-      {isLoading ? <LoadingSpinner /> : <FileIcon />}
-      <span className="truncate text-sm">{name}</span>
+      {isLoading ? <LoadingSpinner /> : <FileIcon isActive={isActive} />}
+      <span className="truncate text-sm font-medium">{name}</span>
       {isDirty && (
-        <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+        <span className="w-2 h-2 rounded-full bg-accent flex-shrink-0" />
       )}
       <button
         onClick={onClose}
         className={`
-          flex-shrink-0 p-0.5 rounded
+          flex-shrink-0 p-1 rounded-md
           ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}
-          hover:bg-gray-200 dark:hover:bg-gray-700
-          transition-opacity
+          hover:bg-white/10 transition-all
         `}
         title="Close tab (⌘W)"
       >
@@ -82,14 +81,14 @@ function Tab({
   );
 }
 
-function FileIcon() {
+function FileIcon({ isActive }: { isActive: boolean }) {
   return (
     <svg
-      className="w-4 h-4 flex-shrink-0 text-gray-500"
+      className={`w-4 h-4 flex-shrink-0 ${isActive ? "text-accent" : "text-muted"}`}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.5"
     >
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
       <polyline points="14 2 14 8 20 8" />
@@ -115,7 +114,7 @@ function CloseIcon() {
 function LoadingSpinner() {
   return (
     <svg
-      className="w-4 h-4 flex-shrink-0 animate-spin text-gray-500"
+      className="w-4 h-4 flex-shrink-0 animate-spin text-accent"
       viewBox="0 0 24 24"
       fill="none"
     >

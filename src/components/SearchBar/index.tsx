@@ -63,32 +63,58 @@ export function SearchBar() {
   };
 
   return (
-    <div className="relative p-2">
-      <input
-        ref={inputRef}
-        type="text"
-        placeholder="Search... (⌘K)"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={handleKeyDown}
-        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      />
+    <div className="relative p-3">
+      <div className="relative">
+        <svg
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Search... ⌘K"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-white/10 bg-white/5 text-text placeholder-muted focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20 transition-all"
+        />
+      </div>
       {results.length > 0 && (
-        <div className="absolute left-2 right-2 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-80 overflow-auto z-50">
+        <div className="absolute left-3 right-3 top-full mt-2 bg-surface border border-white/10 rounded-xl shadow-xl max-h-80 overflow-auto z-50 animate-fade-in">
           {results.map((result, index) => (
             <button
               key={result.id}
               onClick={() => handleSelect(result.path)}
               onMouseEnter={() => setSelectedIndex(index)}
-              className={`w-full text-left px-3 py-2 ${
+              className={`w-full text-left px-4 py-3 flex items-center gap-3 transition-colors ${
                 index === selectedIndex
-                  ? "bg-blue-100 dark:bg-blue-900"
-                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                  ? "bg-accent/10 text-accent"
+                  : "hover:bg-white/5"
               }`}
             >
-              <div className="text-sm font-medium truncate">{result.name}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                {shortenPath(result.path)}
+              <svg
+                className={`w-4 h-4 flex-shrink-0 ${index === selectedIndex ? "text-accent" : "text-muted"}`}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-medium truncate">
+                  {result.name}
+                </div>
+                <div className="text-xs text-muted truncate">
+                  {shortenPath(result.path)}
+                </div>
               </div>
             </button>
           ))}
