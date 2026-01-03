@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/hyphaene/markdown-viewer/compare/v1.5.0...v1.6.0) (2026-01-03)
+
+
+### Features
+
+* redesign UI with max-website design system ([#1](https://github.com/hyphaene/markdown-viewer/issues/1)) ([1bbff79](https://github.com/hyphaene/markdown-viewer/commit/1bbff79bb8a41a713d2e3d5a0048bfdcfdd7a55b)), closes [#0a0a0f](https://github.com/hyphaene/markdown-viewer/issues/0a0a0f) [#12121a](https://github.com/hyphaene/markdown-viewer/issues/12121a) [#00d4aa](https://github.com/hyphaene/markdown-viewer/issues/00d4aa)
+
 # [1.5.0](https://github.com/hyphaene/markdown-viewer/compare/v1.4.0...v1.5.0) (2026-01-02)
 
 
