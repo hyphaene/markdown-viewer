@@ -19,8 +19,8 @@ export function SettingsModal() {
   const [localContentPadding, setLocalContentPadding] = useState<number>(
     settings.contentPadding ?? 16,
   );
-  const [localContentWidth, setLocalContentWidth] = useState<number>(
-    settings.contentWidth ?? 896,
+  const [localContentMargin, setLocalContentMargin] = useState<number>(
+    settings.contentMargin ?? 200,
   );
 
   // Sync local state when settings change
@@ -30,7 +30,7 @@ export function SettingsModal() {
     setLocalTheme(settings.theme);
     setLocalFontSize(settings.fontSize ?? 18);
     setLocalContentPadding(settings.contentPadding ?? 16);
-    setLocalContentWidth(settings.contentWidth ?? 896);
+    setLocalContentMargin(settings.contentMargin ?? 200);
   }, [settings, isSettingsOpen]);
 
   if (!isSettingsOpen) return null;
@@ -48,7 +48,7 @@ export function SettingsModal() {
       theme: localTheme,
       fontSize: localFontSize,
       contentPadding: localContentPadding,
-      contentWidth: localContentWidth,
+      contentMargin: localContentMargin,
     });
     closeSettings();
     // Trigger rescan if sources changed
@@ -195,39 +195,39 @@ export function SettingsModal() {
             </p>
           </div>
 
-          {/* Content Width */}
+          {/* Content Margin */}
           <div>
             <label className="block text-sm font-medium text-text mb-3">
-              Content Width
+              Content Margin
             </label>
             <div className="flex items-center gap-4">
               <button
                 onClick={() =>
-                  setLocalContentWidth(Math.max(600, localContentWidth - 100))
+                  setLocalContentMargin(Math.max(50, localContentMargin - 50))
                 }
-                disabled={localContentWidth <= 600}
+                disabled={localContentMargin <= 50}
                 className="w-10 h-10 rounded-lg border border-white/10 text-muted hover:text-text hover:border-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-lg font-medium"
               >
                 −
               </button>
               <div className="flex-1 text-center">
                 <span className="text-2xl font-semibold text-text">
-                  {localContentWidth}
+                  {localContentMargin}
                 </span>
                 <span className="text-muted ml-1">px</span>
               </div>
               <button
                 onClick={() =>
-                  setLocalContentWidth(Math.min(1600, localContentWidth + 100))
+                  setLocalContentMargin(Math.min(1200, localContentMargin + 50))
                 }
-                disabled={localContentWidth >= 1600}
+                disabled={localContentMargin >= 1200}
                 className="w-10 h-10 rounded-lg border border-white/10 text-muted hover:text-text hover:border-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-lg font-medium"
               >
                 +
               </button>
             </div>
             <p className="mt-2 text-xs text-muted text-center">
-              Tip: Use ⇧+ and ⇧− to adjust width anytime
+              Tip: Use ⇧+ and ⇧− to adjust margin anytime
             </p>
           </div>
 

@@ -15,8 +15,8 @@ export function MarkdownViewer() {
   const contentPadding = useSettingsStore(
     (state) => state.settings.contentPadding ?? 16,
   );
-  const contentWidth = useSettingsStore(
-    (state) => state.settings.contentWidth ?? 896,
+  const contentMargin = useSettingsStore(
+    (state) => state.settings.contentMargin ?? 200,
   );
 
   const selectedFile = activeTab?.path ?? null;
@@ -132,11 +132,16 @@ export function MarkdownViewer() {
         </header>
         <div
           className="flex-1 overflow-auto grid-background"
-          style={{ padding: `${contentPadding}px` }}
+          style={{
+            paddingTop: `${contentPadding}px`,
+            paddingBottom: `${contentPadding}px`,
+            paddingLeft: `${contentMargin}px`,
+            paddingRight: `${contentMargin}px`,
+          }}
         >
           <article
-            className="prose prose-invert prose-custom mx-auto prose-headings:font-semibold prose-code:before:content-none prose-code:after:content-none prose-code:font-mono"
-            style={{ fontSize: `${fontSize}px`, maxWidth: `${contentWidth}px` }}
+            className="prose prose-invert prose-custom max-w-none prose-headings:font-semibold prose-code:before:content-none prose-code:after:content-none prose-code:font-mono"
+            style={{ fontSize: `${fontSize}px` }}
           >
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}

@@ -17,9 +17,9 @@ interface SettingsStore {
   updateContentPadding: (padding: number) => Promise<void>;
   increaseContentPadding: () => void;
   decreaseContentPadding: () => void;
-  updateContentWidth: (width: number) => Promise<void>;
-  increaseContentWidth: () => void;
-  decreaseContentWidth: () => void;
+  updateContentMargin: (margin: number) => Promise<void>;
+  increaseContentMargin: () => void;
+  decreaseContentMargin: () => void;
   openSettings: () => void;
   closeSettings: () => void;
 }
@@ -32,9 +32,9 @@ const MIN_CONTENT_PADDING = 8;
 const MAX_CONTENT_PADDING = 64;
 const CONTENT_PADDING_STEP = 8;
 
-const MIN_CONTENT_WIDTH = 600;
-const MAX_CONTENT_WIDTH = 1600;
-const CONTENT_WIDTH_STEP = 100;
+const MIN_CONTENT_MARGIN = 50;
+const MAX_CONTENT_MARGIN = 1200;
+const CONTENT_MARGIN_STEP = 50;
 
 const defaultSettings: Settings = {
   sources: [
@@ -45,7 +45,7 @@ const defaultSettings: Settings = {
   theme: "system",
   fontSize: 18,
   contentPadding: 16,
-  contentWidth: 896,
+  contentMargin: 200,
   lastOpenedFile: null,
 };
 
@@ -142,23 +142,23 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     );
   },
 
-  updateContentWidth: async (width: number) => {
+  updateContentMargin: async (margin: number) => {
     const { settings, saveSettings } = get();
-    const clampedWidth = Math.min(
-      MAX_CONTENT_WIDTH,
-      Math.max(MIN_CONTENT_WIDTH, width),
+    const clampedMargin = Math.min(
+      MAX_CONTENT_MARGIN,
+      Math.max(MIN_CONTENT_MARGIN, margin),
     );
-    await saveSettings({ ...settings, contentWidth: clampedWidth });
+    await saveSettings({ ...settings, contentMargin: clampedMargin });
   },
 
-  increaseContentWidth: () => {
-    const { settings, updateContentWidth } = get();
-    updateContentWidth((settings.contentWidth ?? 896) + CONTENT_WIDTH_STEP);
+  increaseContentMargin: () => {
+    const { settings, updateContentMargin } = get();
+    updateContentMargin((settings.contentMargin ?? 200) + CONTENT_MARGIN_STEP);
   },
 
-  decreaseContentWidth: () => {
-    const { settings, updateContentWidth } = get();
-    updateContentWidth((settings.contentWidth ?? 896) - CONTENT_WIDTH_STEP);
+  decreaseContentMargin: () => {
+    const { settings, updateContentMargin } = get();
+    updateContentMargin((settings.contentMargin ?? 200) - CONTENT_MARGIN_STEP);
   },
 
   openSettings: () => set({ isSettingsOpen: true }),

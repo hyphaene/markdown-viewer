@@ -13,11 +13,11 @@ export function useKeyboardShortcuts() {
   const closeSettings = useSettingsStore((state) => state.closeSettings);
   const increaseFontSize = useSettingsStore((state) => state.increaseFontSize);
   const decreaseFontSize = useSettingsStore((state) => state.decreaseFontSize);
-  const increaseContentWidth = useSettingsStore(
-    (state) => state.increaseContentWidth,
+  const increaseContentMargin = useSettingsStore(
+    (state) => state.increaseContentMargin,
   );
-  const decreaseContentWidth = useSettingsStore(
-    (state) => state.decreaseContentWidth,
+  const decreaseContentMargin = useSettingsStore(
+    (state) => state.decreaseContentMargin,
   );
 
   useEffect(() => {
@@ -53,17 +53,17 @@ export function useKeyboardShortcuts() {
         return;
       }
 
-      // Shift+= or Shift++ - Increase content width
+      // Shift+= or Shift++ - Decrease content margin (more width for content)
       if (e.shiftKey && !isMod && (e.key === "=" || e.key === "+")) {
         e.preventDefault();
-        increaseContentWidth();
+        decreaseContentMargin();
         return;
       }
 
-      // Shift+- - Decrease content width (both keyboard minus and numpad minus)
+      // Shift+- - Increase content margin (less width for content)
       if (e.shiftKey && !isMod && (e.key === "_" || e.key === "-")) {
         e.preventDefault();
-        decreaseContentWidth();
+        increaseContentMargin();
         return;
       }
 
@@ -163,7 +163,7 @@ export function useKeyboardShortcuts() {
     closeSettings,
     increaseFontSize,
     decreaseFontSize,
-    increaseContentWidth,
-    decreaseContentWidth,
+    increaseContentMargin,
+    decreaseContentMargin,
   ]);
 }
