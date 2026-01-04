@@ -1,8 +1,16 @@
+export interface Frontmatter {
+  title?: string;
+  date?: string;
+  tags?: string[];
+  author?: string;
+}
+
 export interface FileEntry {
   path: string;
   name: string;
   modified: number;
   size: number;
+  frontmatter?: Frontmatter;
 }
 
 export interface Source {
