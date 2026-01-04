@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/hyphaene/markdown-viewer/compare/v1.6.0...v1.7.0) (2026-01-04)
+
+
+### Features
+
+* UI enhancements with frontmatter support ([#2](https://github.com/hyphaene/markdown-viewer/issues/2)) ([820d6b5](https://github.com/hyphaene/markdown-viewer/commit/820d6b50bad0d196e73fac01ebc141fbffd4ebf5))
+
 # [1.6.0](https://github.com/hyphaene/markdown-viewer/compare/v1.5.0...v1.6.0) (2026-01-03)
 
 
