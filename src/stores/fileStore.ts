@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import type { FileEntry } from "../types";
+import type { FileEntry, Frontmatter } from "../types";
 import { scanDirectories, readFile, startWatching } from "../lib/tauri";
 import { useSearchStore } from "./searchStore";
+import { parseMarkdown } from "../lib/markdown";
 
 interface FileStore {
   files: FileEntry[];
@@ -10,6 +11,7 @@ interface FileStore {
   isLoading: boolean;
   error: string | null;
   watchedPaths: string[];
+  allTags: string[];
   scan: (paths: string[]) => Promise<void>;
   selectFile: (path: string) => Promise<void>;
   clearSelection: () => void;
@@ -17,6 +19,22 @@ interface FileStore {
   updateFile: (file: FileEntry) => void;
   removeFile: (path: string) => void;
   reloadSelectedFile: () => Promise<void>;
+  updateFileFrontmatter: (
+    path: string,
+    frontmatter: Frontmatter | undefined,
+  ) => void;
+}
+
+function collectAllTags(files: FileEntry[]): string[] {
+  const tagSet = new Set<string>();
+  for (const file of files) {
+    if (file.frontmatter?.tags) {
+      for (const tag of file.frontmatter.tags) {
+        tagSet.add(tag);
+      }
+    }
+  }
+  return Array.from(tagSet).sort();
 }
 
 export const useFileStore = create<FileStore>((set, get) => ({
@@ -26,14 +44,28 @@ export const useFileStore = create<FileStore>((set, get) => ({
   isLoading: false,
   error: null,
   watchedPaths: [],
+  allTags: [],
 
   scan: async (paths: string[]) => {
     set({ isLoading: true, error: null, watchedPaths: paths });
     try {
       const files = await scanDirectories(paths);
-      set({ files, isLoading: false });
+      // Parse frontmatter for all files in parallel
+      const filesWithFrontmatter = await Promise.all(
+        files.map(async (file) => {
+          try {
+            const content = await readFile(file.path);
+            const { frontmatter } = parseMarkdown(content);
+            return { ...file, frontmatter };
+          } catch {
+            return file;
+          }
+        }),
+      );
+      const allTags = collectAllTags(filesWithFrontmatter);
+      set({ files: filesWithFrontmatter, allTags, isLoading: false });
       // Index files for search
-      useSearchStore.getState().indexFiles(files);
+      useSearchStore.getState().indexFiles(filesWithFrontmatter);
       // Start watching for changes
       await startWatching(paths);
     } catch (e) {
@@ -104,5 +136,18 @@ export const useFileStore = create<FileStore>((set, get) => ({
         console.error("Failed to reload file:", e);
       }
     }
+  },
+
+  updateFileFrontmatter: (
+    path: string,
+    frontmatter: Frontmatter | undefined,
+  ) => {
+    set((state) => {
+      const newFiles = state.files.map((f) =>
+        f.path === path ? { ...f, frontmatter } : f,
+      );
+      const allTags = collectAllTags(newFiles);
+      return { files: newFiles, allTags };
+    });
   },
 }));
