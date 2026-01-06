@@ -4,17 +4,23 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
 import "highlight.js/styles/github-dark.css";
-import { useTabStore } from "../../stores/tabStore";
+import { usePanelStore } from "../../stores/panelStore";
 import { useSettingsStore } from "../../stores/settingsStore";
 import { useFilterStore } from "../../stores/filterStore";
 import { openInVscode, revealInFinder } from "../../lib/tauri";
-import { TableOfContents } from "../TableOfContents";
 import { parseMarkdown, resolveImageSrc } from "../../lib/markdown";
 import type { Frontmatter } from "../../types";
+import { DropZoneOverlay } from "./DropZoneOverlay";
 
-export function MarkdownViewer() {
-  const { tabs, activeTabId } = useTabStore();
-  const activeTab = tabs.find((t) => t.id === activeTabId);
+interface MarkdownViewerProps {
+  panelId: string;
+}
+
+export function MarkdownViewer({ panelId }: MarkdownViewerProps) {
+  const panels = usePanelStore((s) => s.panels);
+  const panel = panels.find((p) => p.id === panelId);
+  const activeTab = panel?.tabs.find((t) => t.id === panel.activeTabId);
+
   const fontSize = useSettingsStore((state) => state.settings.fontSize ?? 18);
   const contentPadding = useSettingsStore(
     (state) => state.settings.contentPadding ?? 16,
@@ -118,7 +124,7 @@ export function MarkdownViewer() {
   };
 
   return (
-    <div className="flex-1 flex overflow-hidden">
+    <div className="flex-1 flex overflow-hidden relative">
       <main className="flex-1 flex flex-col overflow-hidden bg-background">
         <header className="px-6 py-3 border-b border-white/5 bg-surface">
           <div className="flex items-center justify-between">
@@ -190,7 +196,7 @@ export function MarkdownViewer() {
           </article>
         </div>
       </main>
-      <TableOfContents content={content} />
+      <DropZoneOverlay panelId={panelId} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { load } from "@tauri-apps/plugin-store";
-import type { Settings, Source } from "../types";
+import type { Settings, Source, PanelLayout } from "../types";
 
 interface SettingsStore {
   settings: Settings;
@@ -20,6 +20,8 @@ interface SettingsStore {
   updateContentMargin: (margin: number) => Promise<void>;
   increaseContentMargin: () => void;
   decreaseContentMargin: () => void;
+  updatePanelLayout: (layout: PanelLayout) => Promise<void>;
+  getPanelLayout: () => PanelLayout | undefined;
   openSettings: () => void;
   closeSettings: () => void;
 }
@@ -159,6 +161,16 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   decreaseContentMargin: () => {
     const { settings, updateContentMargin } = get();
     updateContentMargin((settings.contentMargin ?? 200) - CONTENT_MARGIN_STEP);
+  },
+
+  updatePanelLayout: async (layout: PanelLayout) => {
+    const { settings, saveSettings } = get();
+    await saveSettings({ ...settings, panelLayout: layout });
+  },
+
+  getPanelLayout: () => {
+    const { settings } = get();
+    return settings.panelLayout;
   },
 
   openSettings: () => set({ isSettingsOpen: true }),
