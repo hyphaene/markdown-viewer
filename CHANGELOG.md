@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/hyphaene/markdown-viewer/compare/v1.7.0...v1.8.0) (2026-01-07)
+
+
+### Features
+
+* split-view with resizable sidebars ([#3](https://github.com/hyphaene/markdown-viewer/issues/3)) ([48c569e](https://github.com/hyphaene/markdown-viewer/commit/48c569e9ac848526b3f6abba505c7623914f7e2c))
+
 # [1.7.0](https://github.com/hyphaene/markdown-viewer/compare/v1.6.0...v1.7.0) (2026-01-04)
 
 
