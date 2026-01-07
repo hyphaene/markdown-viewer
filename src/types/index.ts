@@ -26,6 +26,7 @@ export interface Settings {
   contentPadding: number; // vertical padding in pixels, default 16
   contentMargin: number; // horizontal margin in pixels, default 200
   lastOpenedFile: string | null;
+  panelLayout?: PanelLayout; // split view layout
 }
 
 export interface UpdateInfo {
@@ -33,4 +34,26 @@ export interface UpdateInfo {
   download_url: string;
   release_notes: string;
   published_at: string;
+}
+
+export interface Tab {
+  id: string;
+  path: string;
+  name: string;
+  content: string;
+  isLoading: boolean;
+  isDirty: boolean;
+  scrollPosition?: number;
+}
+
+export interface Panel {
+  id: string;
+  tabs: Tab[];
+  activeTabId: string | null;
+  width: number; // percentage (0-100)
+}
+
+export interface PanelLayout {
+  panels: Panel[];
+  activePanelId: string | null;
 }

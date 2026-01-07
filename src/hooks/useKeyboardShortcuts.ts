@@ -1,11 +1,26 @@
 import { useEffect } from "react";
-import { useTabStore } from "../stores/tabStore";
+import { usePanelStore } from "../stores/panelStore";
 import { useSettingsStore } from "../stores/settingsStore";
 import { openInVscode, revealInFinder } from "../lib/tauri";
 
 export function useKeyboardShortcuts() {
-  const { tabs, activeTabId, closeTab, nextTab, previousTab } = useTabStore();
-  const activeTab = tabs.find((t) => t.id === activeTabId);
+  const {
+    panels,
+    activePanelId,
+    closeTab,
+    closePanel,
+    splitPanel,
+    focusNextPanel,
+    focusPreviousPanel,
+    nextTabInPanel,
+    previousTabInPanel,
+    getActivePanel,
+  } = usePanelStore();
+
+  const activePanel = getActivePanel();
+  const activeTab = activePanel?.tabs.find(
+    (t) => t.id === activePanel.activeTabId,
+  );
   const selectedFile = activeTab?.path ?? null;
 
   const openSettings = useSettingsStore((state) => state.openSettings);
@@ -74,40 +89,87 @@ export function useKeyboardShortcuts() {
         return;
       }
 
-      // Cmd+W - Close current tab
-      if (isMod && e.key === "w") {
+      // Cmd+\ - Split panel (create new split)
+      if (isMod && e.key === "\\") {
         e.preventDefault();
-        if (activeTabId) {
-          closeTab(activeTabId);
+        if (activePanelId) {
+          splitPanel(activePanelId);
         }
         return;
       }
 
-      // Ctrl+Tab - Next tab
-      if (e.ctrlKey && e.key === "Tab" && !e.shiftKey) {
+      // Cmd+W - Close current tab in active panel
+      if (isMod && !e.shiftKey && e.key === "w") {
         e.preventDefault();
-        nextTab();
+        if (activePanelId && activePanel?.activeTabId) {
+          closeTab(activePanelId, activePanel.activeTabId);
+        }
         return;
       }
 
-      // Ctrl+Shift+Tab - Previous tab
+      // Cmd+Shift+W - Close entire active panel
+      if (isMod && e.shiftKey && e.key === "w") {
+        e.preventDefault();
+        if (activePanelId && panels.length > 1) {
+          closePanel(activePanelId);
+        }
+        return;
+      }
+
+      // Cmd+Alt+← - Focus previous panel
+      if (isMod && e.altKey && e.key === "ArrowLeft") {
+        e.preventDefault();
+        focusPreviousPanel();
+        return;
+      }
+
+      // Cmd+Alt+→ - Focus next panel
+      if (isMod && e.altKey && e.key === "ArrowRight") {
+        e.preventDefault();
+        focusNextPanel();
+        return;
+      }
+
+      // Cmd+` - Cycle between panels
+      if (isMod && e.key === "`") {
+        e.preventDefault();
+        focusNextPanel();
+        return;
+      }
+
+      // Ctrl+Tab - Next tab in panel
+      if (e.ctrlKey && e.key === "Tab" && !e.shiftKey) {
+        e.preventDefault();
+        if (activePanelId) {
+          nextTabInPanel(activePanelId);
+        }
+        return;
+      }
+
+      // Ctrl+Shift+Tab - Previous tab in panel
       if (e.ctrlKey && e.shiftKey && e.key === "Tab") {
         e.preventDefault();
-        previousTab();
+        if (activePanelId) {
+          previousTabInPanel(activePanelId);
+        }
         return;
       }
 
       // Cmd+Shift+] - Next tab (alternative)
       if (isMod && e.shiftKey && e.key === "]") {
         e.preventDefault();
-        nextTab();
+        if (activePanelId) {
+          nextTabInPanel(activePanelId);
+        }
         return;
       }
 
       // Cmd+Shift+[ - Previous tab (alternative)
       if (isMod && e.shiftKey && e.key === "[") {
         e.preventDefault();
-        previousTab();
+        if (activePanelId) {
+          previousTabInPanel(activePanelId);
+        }
         return;
       }
 
@@ -154,10 +216,16 @@ export function useKeyboardShortcuts() {
       window.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [
     selectedFile,
-    activeTabId,
+    activePanelId,
+    activePanel,
+    panels,
     closeTab,
-    nextTab,
-    previousTab,
+    closePanel,
+    splitPanel,
+    focusNextPanel,
+    focusPreviousPanel,
+    nextTabInPanel,
+    previousTabInPanel,
     openSettings,
     isSettingsOpen,
     closeSettings,

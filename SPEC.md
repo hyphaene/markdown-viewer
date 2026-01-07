@@ -16,20 +16,20 @@ Développeur / power user avec beaucoup de documentation Markdown dispersée (no
 
 ### 1. Scan & Indexation
 
-| Aspect | Décision |
-|--------|----------|
-| **Sources** | Dossiers configurables (ex: `~/Code`, `~/Notes`, `~/Hexactitude`) |
-| **Exclusions** | `node_modules`, `.git`, `vendor`, dossiers cachés (configurable) |
-| **Format** | Fichiers `.md` et `.mdx` |
-| **Indexation** | Au démarrage + watch mode pour changements en temps réel |
+| Aspect         | Décision                                                          |
+| -------------- | ----------------------------------------------------------------- |
+| **Sources**    | Dossiers configurables (ex: `~/Code`, `~/Notes`, `~/Hexactitude`) |
+| **Exclusions** | `node_modules`, `.git`, `vendor`, dossiers cachés (configurable)  |
+| **Format**     | Fichiers `.md` et `.mdx`                                          |
+| **Indexation** | Au démarrage + watch mode pour changements en temps réel          |
 
 ### 2. Recherche
 
-| Type | Description |
-|------|-------------|
-| **Par nom de fichier** | Fuzzy search sur le path/nom |
-| **Par contenu** | Full-text search dans le contenu Markdown |
-| **Filtres** | Par dossier source, date de modification |
+| Type                   | Description                               |
+| ---------------------- | ----------------------------------------- |
+| **Par nom de fichier** | Fuzzy search sur le path/nom              |
+| **Par contenu**        | Full-text search dans le contenu Markdown |
+| **Filtres**            | Par dossier source, date de modification  |
 
 ### 3. Visualisation
 
@@ -41,17 +41,17 @@ Développeur / power user avec beaucoup de documentation Markdown dispersée (no
 
 ### 4. Actions
 
-| Action | Comportement |
-|--------|--------------|
+| Action                  | Comportement                                                |
+| ----------------------- | ----------------------------------------------------------- |
 | **Ouvrir dans VS Code** | `code <filepath>` - ouvre le fichier à la ligne si possible |
-| **Copier le chemin** | Copie le path absolu dans le clipboard |
-| **Révéler dans Finder** | Ouvre le dossier parent dans Finder |
+| **Copier le chemin**    | Copie le path absolu dans le clipboard                      |
+| **Révéler dans Finder** | Ouvre le dossier parent dans Finder                         |
 
 ---
 
 ## Interface Utilisateur
 
-```
+````
 ┌─────────────────────────────────────────────────────────────────┐
 │  [🔍 Search...]                                    [⚙️] [🌙]    │
 ├──────────────────────┬──────────────────────────────────────────┤
@@ -67,7 +67,7 @@ Développeur / power user avec beaucoup de documentation Markdown dispersée (no
 │  └── notes/todo.md   │   [Open in VS Code]  [Copy Path]         │
 │                      │                                          │
 └──────────────────────┴──────────────────────────────────────────┘
-```
+````
 
 ### Layout
 
@@ -77,14 +77,14 @@ Développeur / power user avec beaucoup de documentation Markdown dispersée (no
 
 ### Raccourcis clavier
 
-| Raccourci | Action |
-|-----------|--------|
-| `Cmd+K` | Focus sur la recherche |
-| `Cmd+O` | Ouvrir dans VS Code |
-| `Cmd+Shift+C` | Copier le chemin |
-| `Cmd+,` | Ouvrir les settings |
-| `↑/↓` | Naviguer dans les résultats |
-| `Enter` | Sélectionner le fichier |
+| Raccourci     | Action                      |
+| ------------- | --------------------------- |
+| `Cmd+K`       | Focus sur la recherche      |
+| `Cmd+O`       | Ouvrir dans VS Code         |
+| `Cmd+Shift+C` | Copier le chemin            |
+| `Cmd+,`       | Ouvrir les settings         |
+| `↑/↓`         | Naviguer dans les résultats |
+| `Enter`       | Sélectionner le fichier     |
 
 ---
 
@@ -92,16 +92,16 @@ Développeur / power user avec beaucoup de documentation Markdown dispersée (no
 
 ### Stack
 
-| Composant | Technologie |
-|-----------|-------------|
-| **Desktop** | Tauri v2 (Rust backend) |
-| **UI** | React + TypeScript |
-| **Styling** | Tailwind CSS |
-| **State** | Zustand |
-| **Markdown** | react-markdown + remark-gfm |
-| **Syntax highlight** | Shiki |
-| **Search index** | MiniSearch (client-side) |
-| **File watching** | notify (crate Rust, via Tauri) |
+| Composant            | Technologie                    |
+| -------------------- | ------------------------------ |
+| **Desktop**          | Tauri v2 (Rust backend)        |
+| **UI**               | React + TypeScript             |
+| **Styling**          | Tailwind CSS                   |
+| **State**            | Zustand                        |
+| **Markdown**         | react-markdown + remark-gfm    |
+| **Syntax highlight** | Shiki                          |
+| **Search index**     | MiniSearch (client-side)       |
+| **File watching**    | notify (crate Rust, via Tauri) |
 
 ### Structure projet
 

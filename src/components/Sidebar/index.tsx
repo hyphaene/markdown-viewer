@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useFileStore } from "../../stores/fileStore";
-import { useTabStore } from "../../stores/tabStore";
+import { usePanelStore } from "../../stores/panelStore";
 import { useSearchStore } from "../../stores/searchStore";
 import { useFilterStore, SortOption } from "../../stores/filterStore";
 import type { FileEntry } from "../../types";
@@ -15,7 +15,8 @@ interface FlatItem {
 export function Sidebar() {
   const parentRef = useRef<HTMLDivElement>(null);
   const { files, isLoading, allTags } = useFileStore();
-  const { tabs, activeTabId, openTab } = useTabStore();
+  const { panels, activePanelId, openFileInActivePanel, openFileInNewPanel } =
+    usePanelStore();
   const { query, results } = useSearchStore();
   const {
     selectedTags,
@@ -27,9 +28,23 @@ export function Sidebar() {
   } = useFilterStore();
   const [showFilters, setShowFilters] = useState(false);
 
-  // Find the currently active file path from tabs
-  const activeTab = tabs.find((t) => t.id === activeTabId);
+  // Find the currently active file path from active panel's active tab
+  const activePanel = panels.find((p) => p.id === activePanelId);
+  const activeTab = activePanel?.tabs.find(
+    (t) => t.id === activePanel.activeTabId,
+  );
   const selectedFile = activeTab?.path ?? null;
+
+  // Handle file click - supports Cmd+Click for new panel
+  const handleFileClick = (e: React.MouseEvent, filePath: string) => {
+    if (e.metaKey || e.ctrlKey) {
+      // Cmd+Click: open in new panel
+      openFileInNewPanel(filePath);
+    } else {
+      // Normal click: open in active panel
+      openFileInActivePanel(filePath);
+    }
+  };
 
   // Filter and sort files
   const filteredFiles = useMemo(() => {
@@ -291,7 +306,7 @@ export function Sidebar() {
               return (
                 <button
                   key={virtualRow.key}
-                  onClick={() => openTab(file.path)}
+                  onClick={(e) => handleFileClick(e, file.path)}
                   style={{
                     position: "absolute",
                     top: 0,
@@ -308,7 +323,7 @@ export function Sidebar() {
                       : "text-text/80 hover:bg-white/5 hover:text-text"
                   }
                 `}
-                  title={file.path}
+                  title={`${file.path} (⌘+Click to open in new panel)`}
                 >
                   <svg
                     className={`w-4 h-4 flex-shrink-0 ${isSelected ? "text-accent" : "text-muted"}`}

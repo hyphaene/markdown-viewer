@@ -1,22 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import "./App.css";
 import { Sidebar } from "./components/Sidebar";
-import { MarkdownViewer } from "./components/MarkdownViewer";
+import { PanelContainer } from "./components/PanelContainer";
 import { SearchBar } from "./components/SearchBar";
 import { SettingsModal } from "./components/Settings";
 import { UpdateBanner } from "./components/UpdateBanner";
-import { TabBar } from "./components/TabBar";
+import { TableOfContents } from "./components/TableOfContents";
+import { parseMarkdown } from "./lib/markdown";
 import { useFileStore } from "./stores/fileStore";
-import { useTabStore } from "./stores/tabStore";
+import { usePanelStore } from "./stores/panelStore";
 import { useSettingsStore } from "./stores/settingsStore";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
-import type { FileEntry } from "./types";
+import { readFile } from "./lib/tauri";
+import type { FileEntry, Panel } from "./types";
 
 function App() {
   const { scan, addFile, updateFile, removeFile } = useFileStore();
-  const { tabs, reloadTab } = useTabStore();
-  const { settings, isLoaded, loadSettings, openSettings } = useSettingsStore();
+  const { panels, activePanelId, createInitialPanel, reloadTab, setLayout } =
+    usePanelStore();
+  const {
+    settings,
+    isLoaded,
+    loadSettings,
+    openSettings,
+    updatePanelLayout,
+    getPanelLayout,
+  } = useSettingsStore();
+  const layoutRestoredRef = useRef(false);
 
   // Register keyboard shortcuts
   useKeyboardShortcuts();
@@ -25,6 +36,88 @@ function App() {
   useEffect(() => {
     loadSettings();
   }, [loadSettings]);
+
+  // Restore layout from settings or create initial panel
+  useEffect(() => {
+    if (!isLoaded || layoutRestoredRef.current) return;
+    layoutRestoredRef.current = true;
+
+    const savedLayout = getPanelLayout();
+    if (savedLayout && savedLayout.panels.length > 0) {
+      // Restore saved layout and reload file contents
+      restoreLayout(savedLayout.panels, savedLayout.activePanelId);
+    } else if (panels.length === 0) {
+      createInitialPanel();
+    }
+  }, [isLoaded, getPanelLayout, createInitialPanel, panels.length]);
+
+  // Restore layout helper - reloads file contents for all tabs
+  async function restoreLayout(
+    savedPanels: Panel[],
+    savedActivePanelId: string | null,
+  ) {
+    // First set the layout structure (without content)
+    const panelsWithLoadingTabs = savedPanels.map((panel) => ({
+      ...panel,
+      tabs: panel.tabs.map((tab) => ({
+        ...tab,
+        content: "",
+        isLoading: true,
+      })),
+    }));
+    setLayout(panelsWithLoadingTabs, savedActivePanelId);
+
+    // Then load content for each tab
+    for (const panel of savedPanels) {
+      for (const tab of panel.tabs) {
+        try {
+          const content = await readFile(tab.path);
+          usePanelStore.setState((state) => ({
+            panels: state.panels.map((p) =>
+              p.id === panel.id
+                ? {
+                    ...p,
+                    tabs: p.tabs.map((t) =>
+                      t.id === tab.id ? { ...t, content, isLoading: false } : t,
+                    ),
+                  }
+                : p,
+            ),
+          }));
+        } catch (e) {
+          console.error(`Failed to load file ${tab.path}:`, e);
+          // Remove tab if file no longer exists
+          usePanelStore.setState((state) => ({
+            panels: state.panels.map((p) =>
+              p.id === panel.id
+                ? {
+                    ...p,
+                    tabs: p.tabs.filter((t) => t.id !== tab.id),
+                    activeTabId:
+                      p.activeTabId === tab.id
+                        ? (p.tabs.find((t) => t.id !== tab.id)?.id ?? null)
+                        : p.activeTabId,
+                  }
+                : p,
+            ),
+          }));
+        }
+      }
+    }
+  }
+
+  // Save layout whenever panels change
+  useEffect(() => {
+    if (!isLoaded || !layoutRestoredRef.current) return;
+    if (panels.length === 0) return;
+
+    // Debounce saves to avoid excessive writes
+    const timer = setTimeout(() => {
+      updatePanelLayout({ panels, activePanelId });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [panels, activePanelId, isLoaded, updatePanelLayout]);
 
   // Scan directories from settings once loaded
   useEffect(() => {
@@ -46,10 +139,12 @@ function App() {
 
     const unlistenChanged = listen<FileEntry>("file:changed", (event) => {
       updateFile(event.payload);
-      // Reload any open tab with this file
-      const openTab = tabs.find((t) => t.path === event.payload.path);
-      if (openTab) {
-        reloadTab(openTab.id);
+      // Reload any open tab with this file across all panels
+      for (const panel of panels) {
+        const openTab = panel.tabs.find((t) => t.path === event.payload.path);
+        if (openTab) {
+          reloadTab(panel.id, openTab.id);
+        }
       }
     });
 
@@ -62,7 +157,7 @@ function App() {
       unlistenChanged.then((fn) => fn());
       unlistenRemoved.then((fn) => fn());
     };
-  }, [addFile, updateFile, removeFile, tabs, reloadTab]);
+  }, [addFile, updateFile, removeFile, panels, reloadTab]);
 
   if (!isLoaded) {
     return (
@@ -112,15 +207,31 @@ function App() {
           </div>
         </div>
 
-        {/* Main content */}
-        <div className="flex-1 flex flex-col min-w-0 bg-background">
-          <TabBar />
-          <MarkdownViewer />
-        </div>
+        {/* Main content - Panel Container */}
+        <PanelContainer />
+
+        {/* Global TOC - shows content of active file */}
+        <GlobalTableOfContents />
       </div>
       <SettingsModal />
     </div>
   );
+}
+
+function GlobalTableOfContents() {
+  const panels = usePanelStore((s) => s.panels);
+  const activePanelId = usePanelStore((s) => s.activePanelId);
+
+  const activePanel = panels.find((p) => p.id === activePanelId);
+  const activeTab = activePanel?.tabs.find(
+    (t) => t.id === activePanel.activeTabId,
+  );
+
+  if (!activeTab?.content) return null;
+
+  const { content } = parseMarkdown(activeTab.content);
+
+  return <TableOfContents content={content} />;
 }
 
 export default App;

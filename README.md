@@ -11,6 +11,7 @@ A lightweight, native macOS app for browsing and reading markdown files.
 - **Fuzzy search** — Find files quickly
 - **Dark mode** — Follows system preference or manual toggle
 - **Auto-update** — Get notified when new versions are available
+- **Split view** — Open multiple files side by side ([spec](./SPLIT-VIEW.md))
 
 ## Installation
 
